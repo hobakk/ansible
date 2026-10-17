@@ -1,0 +1,12 @@
+# sshd는 같은 옵션이 여러 번 나오면 "처음 읽은 값"을 쓴다.
+# cloud-init이 만드는 50-cloud-init.conf보다 먼저 읽히도록 00- 접두어를 붙인다.
+- name: SSH hardening 설정 배포
+  ansible.builtin.template:
+    src: hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/00-hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+    # 문법 오류가 있으면 파일을 교체하지 않아 sshd가 죽는 사고를 막는다.
+    validate: /usr/sbin/sshd -t -f %s
+  notify: Reload sshd

@@ -1,0 +1,38 @@
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: 유저 deploy의 그룹 조회
+      ansible.builtin.command: id -nG deploy
+      register: deploy_groups
+      changed_when: false
+
+    - name: 유저 kmj의 그룹 조회
+      ansible.builtin.command: id -nG kmj
+      register: kmj_groups
+      changed_when: false
+
+    - name: 유저 권한 분리 확인
+      ansible.builtin.assert:
+        that:
+          - "'sudo' in deploy_groups.stdout.split()"
+          - "'sudo' not in kmj_groups.stdout.split()"
+        fail_msg: deploy만 sudo 그룹이어야 합니다.
+
+    - name: MOTD 내용 조회
+      ansible.builtin.slurp:
+        src: /etc/motd
+      register: motd_file
+
+    - name: MOTD 내용 확인
+      ansible.builtin.assert:
+        that: "'Managed by Ansible' in (motd_file.content | b64decode)"
+
+    - name: 패키지 목록 수집
+      ansible.builtin.package_facts:
+
+    - name: 기본 패키지 설치 확인
+      ansible.builtin.assert:
+        that:
+          - "'tree' in ansible_facts.packages"
+          - "'jq' in ansible_facts.packages"

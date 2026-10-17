@@ -1,0 +1,56 @@
+- name: Docker 설치 사전 패키지
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - python3-debian   # deb822_repository 모듈 의존성
+    state: present
+    update_cache: true
+
+- name: APT keyrings 디렉터리 생성
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Docker 공식 GPG 키 다운로드
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: "0644"
+
+# 예전 apt_repository(deprecated)가 만든 one-line 형식 파일이 남아 있으면 중복 소스가 된다.
+- name: 구형 Docker 저장소 파일 제거
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/docker.list
+    state: absent
+
+- name: Docker apt 저장소 등록
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/ubuntu
+    suites: "{{ ansible_facts['distribution_release'] }}"
+    components: stable
+    architectures: "{{ docker_apt_arch_map[ansible_facts['architecture']] }}"
+    signed_by: /etc/apt/keyrings/docker.asc
+    state: present
+
+- name: Docker 패키지 설치
+  ansible.builtin.apt:
+    name: "{{ docker_packages }}"
+    state: present
+    update_cache: true
+
+- name: Docker 서비스 활성화 및 시작
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: 유저를 docker 그룹에 추가
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  loop: "{{ docker_users }}"

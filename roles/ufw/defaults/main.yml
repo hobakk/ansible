@@ -1,0 +1,8 @@
+# 모든 서버에 공통으로 적용되는 규칙. SSH는 항상 포함한다.
+ufw_default_rules:
+  - port: "22"
+    comment: SSH
+
+# 호스트/그룹별로 추가할 규칙 (host_vars, group_vars에서 지정).
+# 항목 형식: port(필수), proto(기본 tcp), from_ip(기본 any), comment(선택)
+ufw_extra_rules: []

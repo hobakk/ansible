@@ -1,0 +1,7 @@
+- name: 안내 파일 배포
+  ansible.builtin.copy:
+    dest: /etc/motd
+    content: "Managed by Ansible - {{ inventory_hostname }}\n"
+    owner: root
+    group: root
+    mode: "0644"

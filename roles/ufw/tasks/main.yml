@@ -1,0 +1,25 @@
+# 접속 끊김 방지: 허용 규칙을 먼저 추가한 뒤 활성화한다.
+- name: 허용 규칙 추가
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto | default('tcp') }}"
+    from_ip: "{{ item.from_ip | default('any') }}"
+    comment: "{{ item.comment | default(omit) }}"
+  loop: "{{ ufw_default_rules + ufw_extra_rules }}"
+  loop_control:
+    label: "{{ item.port }}/{{ item.proto | default('tcp') }} from {{ item.from_ip | default('any') }}"
+
+- name: 기본 정책 incoming 차단
+  community.general.ufw:
+    default: deny
+    direction: incoming
+
+- name: 기본 정책 outgoing 허용
+  community.general.ufw:
+    default: allow
+    direction: outgoing
+
+- name: UFW 활성화
+  community.general.ufw:
+    state: enabled

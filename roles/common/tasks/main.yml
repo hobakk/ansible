@@ -1,0 +1,5 @@
+- name: 기본 패키지 설치
+  ansible.builtin.apt:
+    name: "{{ common_packages }}"
+    state: present
+    update_cache: true

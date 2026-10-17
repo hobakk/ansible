@@ -1,0 +1,5 @@
+collections:
+  - name: community.general
+  - name: ansible.posix
+  # Molecule의 Docker 드라이버가 사용한다 (make test)
+  - name: community.docker

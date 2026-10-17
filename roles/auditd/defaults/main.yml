@@ -1,0 +1,26 @@
+# 변경을 감시할 경로. perms: w(write) a(attribute change), key는 ausearch -k 로 조회할 때 쓴다.
+auditd_watch_rules:
+  - path: /etc/ssh/sshd_config
+    perms: wa
+    key: sshd_config
+  - path: /etc/ssh/sshd_config.d/
+    perms: wa
+    key: sshd_config
+  - path: /etc/sudoers
+    perms: wa
+    key: sudoers
+  - path: /etc/sudoers.d/
+    perms: wa
+    key: sudoers
+  - path: /etc/passwd
+    perms: wa
+    key: identity
+  - path: /etc/shadow
+    perms: wa
+    key: identity
+  - path: /etc/group
+    perms: wa
+    key: identity
+  - path: /etc/gshadow
+    perms: wa
+    key: identity

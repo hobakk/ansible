@@ -1,0 +1,12 @@
+# 개발 서버: nginx 컨테이너 + MySQL이 동작하는 호스트
+ufw_extra_rules:
+  - port: "80"
+    comment: nginx HTTP
+  - port: "443"
+    comment: nginx HTTPS
+  - port: "3306"
+    from_ip: "{{ allowed_subnet }}"
+    comment: MySQL (subnet)
+  - port: "3306"
+    from_ip: "{{ allowed_public_ip }}"
+    comment: MySQL (public IP)

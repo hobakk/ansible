@@ -1,0 +1,10 @@
+# groups를 생략하면 추가 그룹 없이 일반 유저(sudo 없음)로 생성된다.
+users_list:
+  - name: deploy
+    groups: sudo
+
+# 삭제할 유저 이름 목록. users_list에서 이름을 지우는 것만으로는 삭제되지 않는다.
+users_removed: []
+
+# true면 삭제 시 홈 디렉터리와 메일함도 함께 지운다.
+users_remove_home: false

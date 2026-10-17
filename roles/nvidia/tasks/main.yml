@@ -1,0 +1,45 @@
+- name: PCI 장치 조회 도구 설치
+  ansible.builtin.apt:
+    name: pciutils
+    state: present
+    update_cache: true
+
+# NVIDIA의 PCI 제조사 ID는 10de 이다.
+- name: NVIDIA GPU 장착 여부 확인
+  ansible.builtin.command: lspci -nn
+  register: nvidia_lspci
+  changed_when: false
+
+- name: GPU 감지 결과 저장
+  ansible.builtin.set_fact:
+    nvidia_gpu_present: "{{ '10de:' in nvidia_lspci.stdout }}"
+
+- name: GPU가 없어 드라이버 설치를 건너뜀
+  ansible.builtin.debug:
+    msg: NVIDIA GPU가 감지되지 않아 드라이버 설치를 건너뜁니다.
+  when: not nvidia_gpu_present
+
+- name: NVIDIA 드라이버 설치
+  when: nvidia_gpu_present
+  block:
+    - name: NVIDIA 드라이버 패키지 설치
+      ansible.builtin.apt:
+        name: "{{ nvidia_driver_package }}"
+        state: present
+      notify: Reboot for NVIDIA driver
+
+    # 드라이버가 새로 설치되었다면 재부팅(허용된 경우) 후에 상태를 확인한다.
+    - name: 재부팅 handler 먼저 실행
+      ansible.builtin.meta: flush_handlers
+
+    - name: 드라이버 동작 확인 (nvidia-smi)
+      ansible.builtin.command: nvidia-smi
+      register: nvidia_smi
+      changed_when: false
+      failed_when: false
+
+    - name: 드라이버 상태 안내
+      ansible.builtin.debug:
+        msg: >-
+          {{ 'NVIDIA 드라이버가 정상 동작합니다.' if nvidia_smi.rc == 0
+          else '드라이버가 아직 로드되지 않았습니다. 서버를 재부팅한 뒤 다시 실행하세요.' }}

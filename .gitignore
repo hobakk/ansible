@@ -1,0 +1,20 @@
+# 비밀값
+env.sh
+.env
+.env.*
+.vault_pass
+*.vault_pass
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# Ansible / 도구가 만드는 파일
+*.retry
+.ansible/
+.cache/
+
+# 에디터 / OS
+.idea/
+.claude/
+.DS_Store

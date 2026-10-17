@@ -1,0 +1,30 @@
+- name: 운영 유저 생성
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    shell: /bin/bash
+    groups: "{{ item.groups | default(omit) }}"
+    append: "{{ item.groups is defined }}"
+    # password는 평문이 아니라 해시를 받는다. 지정하지 않은 유저는 비밀번호를 건드리지 않는다.
+    password: "{{ item.password | default(omit) }}"
+    create_home: true
+  loop: "{{ users_list }}"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: true
+
+- name: SSH 공개키 등록
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.public_key }}"
+    state: present
+  loop: "{{ users_list | selectattr('public_key', 'defined') | list }}"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: true
+
+- name: 제거 대상 유저 삭제
+  ansible.builtin.user:
+    name: "{{ item }}"
+    state: absent
+    remove: "{{ users_remove_home }}"
+  loop: "{{ users_removed }}"

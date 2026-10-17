@@ -1,0 +1,22 @@
+- name: Auditd 설치
+  ansible.builtin.apt:
+    name: auditd
+    state: present
+    update_cache: true
+
+# 규칙은 rules.d 에 두고 augenrules 로 합쳐 적재한다.
+# `-e 2`(규칙 잠금)는 재부팅 전까지 변경이 불가능해지므로 쓰지 않는다.
+- name: 감사 규칙 배포
+  ansible.builtin.template:
+    src: baseline.rules.j2
+    dest: /etc/audit/rules.d/99-baseline.rules
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Load audit rules
+
+- name: Auditd 서비스 활성화 및 시작
+  ansible.builtin.service:
+    name: auditd
+    state: started
+    enabled: true

@@ -1,0 +1,6 @@
+common_packages:
+  - curl
+  - htop
+  - ufw
+  - tree
+  - jq

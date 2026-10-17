@@ -1,0 +1,12 @@
+# GPU 서버: PostgreSQL만 허용된 출발지에 열어 둔다.
+ufw_extra_rules:
+  - port: "5432"
+    from_ip: "{{ allowed_subnet }}"
+    comment: PostgreSQL (subnet)
+  - port: "5432"
+    from_ip: "{{ allowed_public_ip }}"
+    comment: PostgreSQL (public IP)
+
+# GPU: GeForce RTX 4070 Ti (Ada Lovelace). 데이터센터용이 아니므로 일반 브랜치를 쓴다.
+# 이 드라이버에 CUDA 드라이버(libcuda)가 포함되어 있다. 설치 전 `ubuntu-drivers devices`로 권장 버전을 확인한다.
+nvidia_driver_package: nvidia-driver-570

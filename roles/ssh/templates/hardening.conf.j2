@@ -1,0 +1,6 @@
+# Managed by Ansible
+PermitRootLogin {{ ssh_permit_root_login }}
+PasswordAuthentication {{ ssh_password_authentication }}
+KbdInteractiveAuthentication {{ ssh_password_authentication }}
+PubkeyAuthentication yes
+MaxAuthTries {{ ssh_max_auth_tries }}

@@ -1,0 +1,33 @@
+# 모든 서버 공통 변수
+# 민감하거나 환경마다 다른 값은 환경변수로 주입한다 (Jenkins credentials 등).
+# 필수 값은 site.yml 맨 앞의 preflight play에서 검증한다.
+
+# SSH 접속에 쓰는 개인키 파일 경로 (Ansible을 실행하는 노드의 파일)
+ansible_ssh_private_key_file: "{{ lookup('env', 'ANSIBLE_SSH_KEY_FILE') }}"
+
+# DB 포트 접근을 허용할 출발지
+allowed_subnet: "{{ lookup('env', 'ALLOWED_SUBNET') }}"
+allowed_public_ip: "{{ lookup('env', 'ALLOWED_PUBLIC_IP') }}"
+
+users_list:
+  - name: deploy
+    groups: sudo
+    # sudo 비밀번호용 해시 (평문 X). 생성: openssl passwd -6
+    password: "{{ lookup('env', 'DEPLOY_PASSWORD_HASH') }}"
+    public_key: "{{ lookup('env', 'DEPLOY_SSH_PUBKEY') }}"
+  - name: kmj
+    public_key: "{{ lookup('env', 'KMJ_SSH_PUBKEY') }}"
+
+# docker 그룹에 넣을 유저 (sudo 없이 docker 사용)
+docker_users:
+  - deploy
+  - kmj
+
+# 필수 환경변수 이름 목록 (preflight 검증용)
+required_env_vars:
+  - ANSIBLE_SSH_KEY_FILE
+  - ALLOWED_SUBNET
+  - ALLOWED_PUBLIC_IP
+  - DEPLOY_PASSWORD_HASH
+  - DEPLOY_SSH_PUBKEY
+  - KMJ_SSH_PUBKEY

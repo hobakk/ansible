@@ -1,0 +1,4 @@
+# Managed by Ansible
+{% for rule in auditd_watch_rules %}
+-w {{ rule.path }} -p {{ rule.perms }} -k {{ rule.key }}
+{% endfor %}

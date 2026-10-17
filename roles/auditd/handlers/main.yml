@@ -1,0 +1,4 @@
+# auditd는 systemctl restart를 제한하므로 augenrules로 규칙만 다시 적재한다.
+- name: Load audit rules
+  ansible.builtin.command: augenrules --load
+  changed_when: true

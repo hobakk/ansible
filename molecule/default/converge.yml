@@ -1,0 +1,13 @@
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    # 공개키/비밀번호 환경변수 없이 돌도록 테스트용 유저만 직접 정의한다.
+    users_list:
+      - name: deploy
+        groups: sudo
+      - name: kmj
+  roles:
+    - common
+    - users
+    - motd
