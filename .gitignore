@@ -16,5 +16,6 @@ id_ed25519*
 
 # 에디터 / OS
 .idea/
+*.iml
 .claude/
 .DS_Store
